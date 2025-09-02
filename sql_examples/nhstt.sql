@@ -12,9 +12,9 @@ FROM ids101referral
 WHERE Unique_MonthID < 1492 -- July 2024
 GROUP BY PathwayID;
 
-----------------------------------------------------------------------
+----------------------------------------------------------------------------
 ------------Figure A.2 and A.3: Therapy intensity variable---------------
-----------------------------------------------------------------------
+----------------------------------------------------------------------------
 CREATE OR REPLACE TEMPORARY VIEW pathway_intensities AS
 WITH intensities AS (--derives the therapy intensity column for each care activity
 SELECT i201.OrgID_Provider, i201.Unique_MonthID, i201.Person_ID, 
