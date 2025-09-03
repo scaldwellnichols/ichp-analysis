@@ -56,8 +56,32 @@ CASE WHEN Occ_Occupation_Code_To_Yearly_Working IS NULL AND modAgeBand = 'Under 
 
 FROM vw_esr;
 
+------------------------------------------------------------------------------------------------------------------------------------------------
+----------------Figure B.2: Validation query ensuring that each NHS workforce joiner is counted once only, by checking--------------------------
+-----------------------------consistency between the total Full-Time Equivalent (FTE) of joiners and the sum of all joiner subcategories-------
+-------------------------------------------------------------------------------------------------------------------------------------------------
+SELECT time_tm_end_date
+
+--total FTE of joiners
+, SUM(fact_contracted_wte) AS joiner_fte
+
+--total FTE from the joiner fields
+, sum(joiner_NQ + joiner_IR + joiner_WLM + churn_joiner) AS joiner_columns_sum
+
+--check
+--the total fte from the joiner fields should match the total FTE
+, sum(joiner_NQ + joiner_IR + joiner_WLM + churn_joiner)=SUM(fact_contracted_wte) AS check
+
+FROM flow_analytics
+
+--filter to records who are classified as a joiner
+WHERE (joiner_NQ > 0 OR joiner_IR > 0 OR joiner_WLM > 0 OR churn_joiner > 0)
+
+GROUP BY time_tm_end_date
+ORDER BY time_tm_end_date DESC
+
 -------------------------------------------------------------------------------------------------------
-----------------Figure B.2: Time series data aggregated by profession------------------------------
+----------------Figure B.3: Time series data aggregated by profession------------------------------
 -------------------------------------------------------------------------------------------------------
 SELECT Time_Tm_End_Date, profession, SUM(Fact_Contracted_WTE) AS fte
 --FTE of staff joining the NHS
